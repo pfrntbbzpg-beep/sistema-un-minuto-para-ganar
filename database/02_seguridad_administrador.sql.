@@ -1,0 +1,25 @@
+-- Cambio de seguridad: solo el Administrador accede a los datos
+drop policy "Acceso solo autenticados" on cliente;
+drop policy "Acceso solo autenticados" on ubicacion;
+drop policy "Acceso solo autenticados" on evento;
+drop policy "Acceso solo autenticados" on material;
+drop policy "Acceso solo autenticados" on asignacion_material;
+
+create policy "Solo administrador" on cliente for all to authenticated
+  using ((select auth.uid()) = '82d6917d-e356-4a03-81ca-d5908fe29f3c')
+  with check ((select auth.uid()) = '82d6917d-e356-4a03-81ca-d5908fe29f3c');
+
+create policy "Solo administrador" on ubicacion for all to authenticated
+  using ((select auth.uid()) = '82d6917d-e356-4a03-81ca-d5908fe29f3c')
+  with check ((select auth.uid()) = '82d6917d-e356-4a03-81ca-d5908fe29f3c');
+
+create policy "Solo administrador" on evento for all to authenticated
+  using ((select auth.uid()) = '82d6917d-e356-4a03-81ca-d5908fe29f3c')
+  with check ((select auth.uid()) = '82d6917d-e356-4a03-81ca-d5908fe29f3c');
+
+create policy "Solo administrador" on material for all to authenticated
+  using ((select auth.uid()) = '82d6917d-e356-4a03-81ca-d5908fe29f3c')
+  with check ((select auth.uid()) = '82d6917d-e356-4a03-81ca-d5908fe29f3c');
+
+create policy "Solo administrador" on asignacion_material for all to authenticated
+  using ((select auth.uid()) = '82d6917d-e356-4a03-81
