@@ -13,10 +13,15 @@
     --azul: #1b6fd1;
     --azul-claro: #e4f0fd;
     --rojo: #d81e2c;
+    --rojo-claro: #fde8ea;
     --granate: #4a0b14;
     --amarillo: #ffc83d;
+    --amarillo-claro: #fff4d6;
+    --verde: #1f9d55;
+    --verde-claro: #e3f6ea;
     --tinta: #1d1420;
     --gris: #5d6880;
+    --borde: #d5dcea;
     --fondo: #f6f8fc;
     --blanco: #ffffff;
   }
@@ -28,17 +33,14 @@
     min-height: 100vh;
     padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
   }
-  h1, h2, .numero { font-family: "Lilita One", "Arial Rounded MT Bold", Arial, sans-serif; font-weight: 400; letter-spacing: .5px; }
-  button, input { font: inherit; }
+  h1, h2, h3, .numero { font-family: "Lilita One", "Arial Rounded MT Bold", Arial, sans-serif; font-weight: 400; letter-spacing: .5px; }
+  button, input, select { font: inherit; }
   :focus-visible { outline: 3px solid var(--amarillo); outline-offset: 2px; }
   .oculto { display: none !important; }
 
-  /* Inicio de sesión */
+  /* ---------- Inicio de sesión ---------- */
   #login {
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    padding: 24px;
+    min-height: 100vh; display: grid; place-items: center; padding: 24px;
     background:
       radial-gradient(circle at 12% 18%, rgba(255,200,61,.35) 0 38px, transparent 40px),
       radial-gradient(circle at 85% 12%, rgba(27,111,209,.45) 0 52px, transparent 54px),
@@ -47,57 +49,90 @@
       radial-gradient(circle at 50% 50%, #7a1420, var(--granate) 70%);
   }
   .tarjeta-login {
-    width: 100%;
-    max-width: 380px;
-    background: var(--blanco);
-    border-radius: 24px;
-    padding: 32px 28px;
-    margin-top: 80px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
+    width: 100%; max-width: 380px; background: var(--blanco); border-radius: 24px;
+    padding: 32px 28px; margin-top: 80px; display: flex; flex-direction: column; gap: 18px;
   }
   .marca { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
   .logo { width: 150px; height: 150px; border-radius: 50%; margin-top: -96px; border: 6px solid var(--blanco); background: var(--granate); }
-  .logo-chico { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--blanco); }
-  .titulo { display: flex; align-items: center; gap: 12px; }
   .marca h1 { font-size: 28px; line-height: 1.05; color: var(--rojo); }
   .marca p { color: var(--gris); font-size: 14px; }
+
+  /* ---------- Formularios ---------- */
   label { display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 15px; }
-  input {
-    border: 2px solid #d5dcea; border-radius: 12px;
-    padding: 12px 14px; font-size: 16px; color: var(--tinta);
+  input, select {
+    border: 2px solid var(--borde); border-radius: 12px; background: var(--blanco);
+    padding: 11px 14px; font-size: 16px; font-weight: 400; color: var(--tinta); width: 100%;
   }
-  input:focus { border-color: var(--azul); outline: none; }
+  input:focus, select:focus { border-color: var(--azul); outline: none; }
   .boton {
-    background: var(--rojo); color: var(--blanco);
-    border: none; border-radius: 12px; padding: 14px;
-    font-weight: 700; font-size: 17px; cursor: pointer;
+    background: var(--rojo); color: var(--blanco); border: none; border-radius: 12px;
+    padding: 13px 18px; font-weight: 700; font-size: 17px; cursor: pointer;
   }
   .boton:disabled { opacity: .6; cursor: wait; }
+  .boton-sec {
+    background: var(--blanco); color: var(--azul); border: 2px solid var(--azul-claro);
+    border-radius: 10px; padding: 8px 12px; font-weight: 700; font-size: 14px; cursor: pointer;
+  }
+  .boton-sec.peligro { color: var(--rojo); border-color: var(--rojo-claro); }
+  .boton-sec.exito { color: var(--verde); border-color: var(--verde-claro); }
   .mensaje { font-size: 14px; color: var(--rojo); min-height: 18px; }
+  .mensaje.ok { color: var(--verde); }
+  .fila { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grupo { background: var(--blanco); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+  .grupo h3 { font-size: 22px; color: var(--azul); }
+  .nota { color: var(--gris); font-size: 14px; font-weight: 400; }
 
-  /* Panel */
+  /* ---------- Encabezado y pestañas ---------- */
   header {
-    background: var(--azul); color: var(--blanco);
-    padding: 16px 20px;
+    background: var(--azul); color: var(--blanco); padding: 14px 20px;
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
   }
+  .titulo { display: flex; align-items: center; gap: 12px; }
+  .logo-chico { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--blanco); }
   header h1 { font-size: 22px; }
   .salir {
-    background: transparent; color: var(--blanco);
-    border: 2px solid rgba(255,255,255,.5); border-radius: 10px;
-    padding: 6px 12px; font-weight: 700; cursor: pointer; white-space: nowrap;
+    background: transparent; color: var(--blanco); border: 2px solid rgba(255,255,255,.5);
+    border-radius: 10px; padding: 6px 12px; font-weight: 700; cursor: pointer; white-space: nowrap;
   }
-  main { max-width: 720px; margin: 0 auto; padding: 24px 20px 48px; display: flex; flex-direction: column; gap: 16px; }
+  nav { background: var(--blanco); border-bottom: 1px solid var(--borde); position: sticky; top: 0; z-index: 5; }
+  nav .tabs { max-width: 760px; margin: 0 auto; display: flex; }
+  nav button {
+    flex: 1; background: none; border: none; padding: 14px 8px; font-weight: 700; font-size: 15px;
+    color: var(--gris); border-bottom: 4px solid transparent; cursor: pointer;
+  }
+  nav button.activa { color: var(--rojo); border-bottom-color: var(--rojo); }
+  main { max-width: 760px; margin: 0 auto; padding: 22px 18px 56px; display: flex; flex-direction: column; gap: 16px; }
   main h2 { font-size: 28px; }
   .ayuda { color: var(--gris); }
+
+  /* ---------- Agenda ---------- */
+  .filtros { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    border: 2px solid var(--borde); background: var(--blanco); border-radius: 999px;
+    padding: 6px 14px; font-weight: 700; font-size: 14px; color: var(--gris); cursor: pointer;
+  }
+  .chip.activa { border-color: var(--azul); color: var(--azul); background: var(--azul-claro); }
+  .dia { font-family: "Lilita One", Arial, sans-serif; font-size: 20px; color: var(--granate); margin-top: 6px; }
+  .evento {
+    background: var(--blanco); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px;
+    border-left: 6px solid var(--amarillo);
+  }
+  .evento.confirmado { border-left-color: var(--verde); }
+  .evento.cancelado { border-left-color: var(--borde); opacity: .65; }
+  .evento-cabeza { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .hora { font-family: "Lilita One", Arial, sans-serif; font-size: 22px; color: var(--azul); }
+  .estado { font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--amarillo-claro); color: #8a6200; }
+  .estado.confirmado { background: var(--verde-claro); color: var(--verde); }
+  .estado.cancelado { background: #eef0f4; color: var(--gris); }
+  .evento p { font-size: 15px; line-height: 1.4; }
+  .evento .materiales { color: var(--gris); font-size: 14px; }
+  .acciones { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  /* ---------- Materiales ---------- */
   .lista { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; }
   .material {
-    background: var(--blanco); border-radius: 16px;
-    padding: 14px 16px;
-    display: flex; align-items: center; gap: 14px;
-    border-left: 6px solid var(--azul);
+    background: var(--blanco); border-radius: 16px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 14px; border-left: 6px solid var(--azul);
   }
   .material.consumible { border-left-color: var(--amarillo); }
   .material.agotado { border-left-color: var(--rojo); }
@@ -106,13 +141,18 @@
   .info small { color: var(--gris); font-size: 14px; }
   .contador { display: flex; align-items: center; gap: 8px; }
   .contador button {
-    width: 36px; height: 36px; border-radius: 50%;
-    border: 2px solid var(--azul-claro); background: var(--azul-claro);
-    color: var(--azul); font-weight: 800; font-size: 20px; cursor: pointer;
+    width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--azul-claro);
+    background: var(--azul-claro); color: var(--azul); font-weight: 800; font-size: 20px; cursor: pointer;
   }
-  .numero { font-size: 26px; font-weight: 800; min-width: 36px; text-align: center; color: var(--azul); }
+  .numero { font-size: 26px; min-width: 36px; text-align: center; color: var(--azul); }
   .material.agotado .numero { color: var(--rojo); }
+  .asignar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid #eef1f6; }
+  .asignar:last-child { border-bottom: none; }
+  .asignar span { font-weight: 600; }
+  .asignar small { color: var(--gris); font-weight: 400; }
+  .asignar input { width: 90px; text-align: center; }
 
+  @media (max-width: 520px) { .fila { grid-template-columns: 1fr; } }
   @media (prefers-reduced-motion: no-preference) {
     .numero.cambio { animation: pulso .35s ease; }
     @keyframes pulso { 50% { transform: scale(1.25); } }
@@ -121,7 +161,7 @@
 </head>
 <body>
 
-<!-- Pantalla de inicio de sesión -->
+<!-- ================= Inicio de sesión ================= -->
 <section id="login">
   <form class="tarjeta-login" id="formLogin">
     <div class="marca">
@@ -129,18 +169,14 @@
       <h1>Panel de administración</h1>
       <p>Agenda, clientes e inventario de los shows</p>
     </div>
-    <label>Correo
-      <input type="email" id="correo" autocomplete="username" required>
-    </label>
-    <label>Contraseña
-      <input type="password" id="contrasena" autocomplete="current-password" required>
-    </label>
+    <label>Correo <input type="email" id="correo" autocomplete="username" required></label>
+    <label>Contraseña <input type="password" id="contrasena" autocomplete="current-password" required></label>
     <button class="boton" id="botonEntrar" type="submit">Entrar</button>
     <p class="mensaje" id="mensajeLogin" role="alert"></p>
   </form>
 </section>
 
-<!-- Panel del administrador -->
+<!-- ================= Panel ================= -->
 <section id="panel" class="oculto">
   <header>
     <div class="titulo">
@@ -149,83 +185,445 @@
     </div>
     <button class="salir" id="botonSalir">Cerrar sesión</button>
   </header>
-  <main>
+  <nav>
+    <div class="tabs">
+      <button data-vista="agenda" class="activa">Agenda</button>
+      <button data-vista="nuevo">Nuevo evento</button>
+      <button data-vista="inventario">Inventario</button>
+    </div>
+  </nav>
+
+  <!-- Agenda -->
+  <main id="vista-agenda">
+    <h2>Agenda de eventos</h2>
+    <div class="filtros">
+      <button class="chip activa" data-filtro="proximos">Próximos</button>
+      <button class="chip" data-filtro="todos">Todos</button>
+    </div>
+    <p class="mensaje" id="mensajeAgenda" role="alert"></p>
+    <div id="listaEventos"></div>
+  </main>
+
+  <!-- Nuevo / editar evento -->
+  <main id="vista-nuevo" class="oculto">
+    <h2 id="tituloFormulario">Nuevo evento</h2>
+    <form id="formEvento" style="display:flex;flex-direction:column;gap:16px">
+      <div class="grupo">
+        <h3>Cliente</h3>
+        <label>Cliente
+          <select id="selCliente"></select>
+        </label>
+        <div id="nuevoCliente" class="fila oculto">
+          <label>Nombre <input id="cliNombre" maxlength="100"></label>
+          <label>Teléfono <input id="cliTelefono" type="tel" maxlength="15"></label>
+        </div>
+      </div>
+
+      <div class="grupo">
+        <h3>Ubicación</h3>
+        <label>Lugar
+          <select id="selUbicacion"></select>
+        </label>
+        <div id="nuevaUbicacion" class="oculto" style="display:flex;flex-direction:column;gap:12px">
+          <label>Nombre del lugar <input id="ubiLugar" maxlength="100" placeholder="Ej.: Salón Las Palmas"></label>
+          <label>Dirección <input id="ubiDireccion" maxlength="150" placeholder="Calle, número, colonia, municipio"></label>
+        </div>
+      </div>
+
+      <div class="grupo">
+        <h3>Datos del show</h3>
+        <label>Fecha <input id="evFecha" type="date" required></label>
+        <div class="fila">
+          <label>Hora de inicio <input id="evInicio" type="time" required></label>
+          <label>Hora de fin <input id="evFin" type="time" required></label>
+        </div>
+        <div class="fila">
+          <label>Tipo de show
+            <select id="evTipo">
+              <option>Infantil</option>
+              <option>Adultos</option>
+              <option>Todas las edades</option>
+            </select>
+          </label>
+          <label>Número de invitados <input id="evInvitados" type="number" min="1" required></label>
+        </div>
+        <label>Estado
+          <select id="evEstado">
+            <option value="pendiente">Pendiente</option>
+            <option value="confirmado">Confirmado</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="grupo">
+        <h3>Materiales para el show</h3>
+        <p class="nota">Escribe cuántos de cada material se llevarán. Deja 0 si no se usa.</p>
+        <div id="listaAsignar"></div>
+      </div>
+
+      <p class="mensaje" id="mensajeEvento" role="alert"></p>
+      <button class="boton" id="botonGuardarEvento" type="submit">Guardar evento</button>
+      <button class="boton-sec oculto" id="botonCancelarEdicion" type="button">Descartar cambios</button>
+    </form>
+  </main>
+
+  <!-- Inventario -->
+  <main id="vista-inventario" class="oculto">
     <h2>Inventario</h2>
     <p class="ayuda">Usa − y + para actualizar la cantidad disponible de cada material.</p>
-    <p class="mensaje" id="mensajePanel" role="alert"></p>
+    <p class="mensaje" id="mensajeInventario" role="alert"></p>
     <ul class="lista" id="listaMateriales"></ul>
+    <form class="grupo" id="formMaterial">
+      <h3>Agregar material</h3>
+      <label>Nombre <input id="matNombre" maxlength="100" required></label>
+      <div class="fila">
+        <label>Tipo
+          <select id="matTipo"><option>Juego</option><option>Consumible</option></select>
+        </label>
+        <label>Cantidad <input id="matCantidad" type="number" min="0" value="1" required></label>
+      </div>
+      <button class="boton" type="submit">Agregar material</button>
+    </form>
   </main>
 </section>
 
 <script>
-  // Conexión con Supabase (la clave publicable es segura: la protección está en las reglas RLS)
+  // ================= Conexión con Supabase =================
+  // La clave publicable es segura: la protección de los datos está en las reglas RLS.
   const SUPABASE_URL = "https://hkagkluibrjbvjbmoicb.supabase.co";
   const SUPABASE_KEY = "sb_publishable_4ugzBCxeBX-gySzz5Rqj1Q_LY-Wgsuv";
   const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const $ = (id) => document.getElementById(id);
+  let materiales = [];
+  let clientes = [];
+  let ubicaciones = [];
+  let eventoEditando = null;
+  let filtroAgenda = "proximos";
 
-  // Mostrar la pantalla correcta según haya sesión o no
+  // Traduce los errores de la base de datos a mensajes claros
+  function explicarError(error) {
+    const t = (error.message || "").toLowerCase();
+    if (error.code === "23P01" || t.includes("sin_traslape")) return "Ese horario se traslapa con otro evento ya registrado. Elige otra hora o fecha.";
+    if (t.includes("material insuficiente")) return "No hay suficiente material: " + error.message.replace(/^.*Material insuficiente: /i, "");
+    if (t.includes("chk_horario")) return "La hora de fin debe ser después de la hora de inicio.";
+    if (error.code === "23503") return "No se puede borrar porque tiene registros relacionados.";
+    return "Ocurrió un error: " + error.message;
+  }
+
+  function hoyISO() {
+    const d = new Date();
+    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  }
+  const hora = (t) => (t || "").slice(0, 5);
+  function fechaLarga(iso) {
+    const [a, m, d] = iso.split("-").map(Number);
+    return new Date(a, m - 1, d).toLocaleDateString("es-MX", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  }
+
+  // ================= Sesión =================
   async function revisarSesion() {
     const { data } = await db.auth.getSession();
     const conSesion = !!data.session;
     $("login").classList.toggle("oculto", conSesion);
     $("panel").classList.toggle("oculto", !conSesion);
-    if (conSesion) cargarMateriales();
+    if (conSesion) { await cargarCatalogos(); mostrarVista("agenda"); }
   }
 
-  // Iniciar sesión
   $("formLogin").addEventListener("submit", async (e) => {
     e.preventDefault();
     $("botonEntrar").disabled = true;
     $("mensajeLogin").textContent = "";
-    const { error } = await db.auth.signInWithPassword({
-      email: $("correo").value.trim(),
-      password: $("contrasena").value
-    });
+    const { error } = await db.auth.signInWithPassword({ email: $("correo").value.trim(), password: $("contrasena").value });
     $("botonEntrar").disabled = false;
-    if (error) {
-      $("mensajeLogin").textContent = "Correo o contraseña incorrectos. Revisa los datos e inténtalo otra vez.";
-      return;
-    }
+    if (error) { $("mensajeLogin").textContent = "Correo o contraseña incorrectos. Revisa los datos e inténtalo otra vez."; return; }
     revisarSesion();
   });
 
-  // Cerrar sesión
-  $("botonSalir").addEventListener("click", async () => {
-    await db.auth.signOut();
-    revisarSesion();
-  });
+  $("botonSalir").addEventListener("click", async () => { await db.auth.signOut(); revisarSesion(); });
 
-  // Cargar inventario
-  async function cargarMateriales() {
-    $("mensajePanel").textContent = "";
-    const { data, error } = await db
-      .from("material")
-      .select("id_material, nombre, tipo, cantidad_disponible")
-      .order("id_material");
+  // ================= Navegación =================
+  function mostrarVista(vista) {
+    ["agenda", "nuevo", "inventario"].forEach((v) => $("vista-" + v).classList.toggle("oculto", v !== vista));
+    document.querySelectorAll("nav button").forEach((b) => b.classList.toggle("activa", b.dataset.vista === vista));
+    if (vista === "agenda") cargarAgenda();
+    if (vista === "inventario") cargarInventario();
+    if (vista === "nuevo" && !eventoEditando) prepararFormulario();
+    window.scrollTo(0, 0);
+  }
+  document.querySelectorAll("nav button").forEach((b) => b.addEventListener("click", () => {
+    if (b.dataset.vista === "nuevo") eventoEditando = null;
+    mostrarVista(b.dataset.vista);
+  }));
 
-    if (error) {
-      $("mensajePanel").textContent = "No se pudo cargar el inventario: " + error.message;
-      return;
-    }
-    const lista = $("listaMateriales");
-    lista.innerHTML = "";
-    if (data.length === 0) {
-      lista.innerHTML = '<li class="ayuda">Todavía no hay materiales registrados.</li>';
-      return;
-    }
-    data.forEach((m) => lista.appendChild(crearFila(m)));
+  // ================= Catálogos (clientes, ubicaciones, materiales) =================
+  async function cargarCatalogos() {
+    const [c, u, m] = await Promise.all([
+      db.from("cliente").select("*").order("nombre"),
+      db.from("ubicacion").select("*").order("lugar"),
+      db.from("material").select("*").order("id_material")
+    ]);
+    clientes = c.data || [];
+    ubicaciones = u.data || [];
+    materiales = m.data || [];
   }
 
-  function crearFila(m) {
+  // ================= Agenda =================
+  document.querySelectorAll(".chip").forEach((c) => c.addEventListener("click", () => {
+    filtroAgenda = c.dataset.filtro;
+    document.querySelectorAll(".chip").forEach((x) => x.classList.toggle("activa", x === c));
+    cargarAgenda();
+  }));
+
+  async function cargarAgenda() {
+    $("mensajeAgenda").textContent = "";
+    let consulta = db.from("evento")
+      .select("*, cliente(nombre, telefono), ubicacion(lugar, direccion), asignacion_material(id_material, cantidad, material(nombre))")
+      .order("fecha").order("hora_inicio");
+    if (filtroAgenda === "proximos") consulta = consulta.gte("fecha", hoyISO());
+    const { data, error } = await consulta;
+    const cont = $("listaEventos");
+    cont.innerHTML = "";
+    if (error) { $("mensajeAgenda").textContent = explicarError(error); return; }
+    if (data.length === 0) {
+      cont.innerHTML = '<p class="ayuda">No hay eventos en la agenda. Registra uno en la pestaña <b>Nuevo evento</b>.</p>';
+      return;
+    }
+    let diaActual = "";
+    data.forEach((ev) => {
+      if (ev.fecha !== diaActual) {
+        diaActual = ev.fecha;
+        const h = document.createElement("p");
+        h.className = "dia";
+        const f = fechaLarga(ev.fecha); h.textContent = f.charAt(0).toUpperCase() + f.slice(1);
+        cont.appendChild(h);
+      }
+      cont.appendChild(tarjetaEvento(ev));
+    });
+  }
+
+  function tarjetaEvento(ev) {
+    const div = document.createElement("div");
+    div.className = "evento " + ev.estado;
+    const mats = ev.asignacion_material.map((a) => `${a.cantidad} × ${a.material.nombre}`).join(", ");
+    div.innerHTML = `
+      <div class="evento-cabeza">
+        <span class="hora"></span>
+        <span class="estado ${ev.estado}"></span>
+      </div>
+      <p><b class="c"></b> <span class="t"></span></p>
+      <p class="u"></p>
+      <p class="s"></p>
+      <p class="materiales"></p>
+      <div class="acciones"></div>`;
+    div.querySelector(".hora").textContent = `${hora(ev.hora_inicio)} – ${hora(ev.hora_fin)}`;
+    div.querySelector(".estado").textContent = ev.estado.charAt(0).toUpperCase() + ev.estado.slice(1);
+    div.querySelector(".c").textContent = ev.cliente.nombre;
+    div.querySelector(".t").textContent = "· " + ev.cliente.telefono;
+    div.querySelector(".u").textContent = `${ev.ubicacion.lugar} — ${ev.ubicacion.direccion}`;
+    div.querySelector(".s").textContent = `Show ${ev.tipo_show.toLowerCase()} · ${ev.num_invitados} invitados`;
+    div.querySelector(".materiales").textContent = mats ? "Materiales: " + mats : "Sin materiales asignados";
+
+    const acc = div.querySelector(".acciones");
+    const boton = (texto, clase, fn) => {
+      const b = document.createElement("button");
+      b.className = "boton-sec " + clase; b.type = "button"; b.textContent = texto;
+      b.addEventListener("click", fn); acc.appendChild(b);
+    };
+    if (ev.estado !== "cancelado") {
+      boton("Enviar al personal", "", () => enviarHojaRuta(ev));
+      boton("Editar", "", () => editarEvento(ev));
+      if (ev.estado === "pendiente") boton("Confirmar", "exito", () => cambiarEstado(ev, "confirmado"));
+      boton("Cancelar evento", "peligro", () => {
+        if (confirm("¿Cancelar este evento? Sus materiales quedarán liberados.")) cambiarEstado(ev, "cancelado");
+      });
+    }
+    return div;
+  }
+
+  async function cambiarEstado(ev, estado) {
+    const { error } = await db.from("evento").update({ estado }).eq("id_evento", ev.id_evento);
+    if (error) { $("mensajeAgenda").textContent = explicarError(error); return; }
+    cargarAgenda();
+  }
+
+  // Hoja de ruta para el personal de los shows (se envía por WhatsApp)
+  function enviarHojaRuta(ev) {
+    const mats = ev.asignacion_material.length
+      ? ev.asignacion_material.map((a) => `• ${a.cantidad} × ${a.material.nombre}`).join("\n")
+      : "• Sin materiales asignados";
+    const texto =
+`🎉 *Un Minuto para Ganar* — Evento #${ev.id_evento}
+📅 ${fechaLarga(ev.fecha)}
+⏰ ${hora(ev.hora_inicio)} a ${hora(ev.hora_fin)}
+📍 ${ev.ubicacion.lugar}: ${ev.ubicacion.direccion}
+👤 Cliente: ${ev.cliente.nombre} (${ev.cliente.telefono})
+🎤 Show ${ev.tipo_show.toLowerCase()} · ${ev.num_invitados} invitados
+
+🧰 *Materiales a cargar:*
+${mats}`;
+    window.open("https://wa.me/?text=" + encodeURIComponent(texto), "_blank");
+  }
+
+  // ================= Formulario de evento =================
+  function llenarSelect(sel, items, valor, texto, nuevoTexto) {
+    sel.innerHTML = "";
+    items.forEach((i) => {
+      const o = document.createElement("option");
+      o.value = i[valor]; o.textContent = texto(i); sel.appendChild(o);
+    });
+    const n = document.createElement("option");
+    n.value = "nuevo"; n.textContent = nuevoTexto; sel.appendChild(n);
+  }
+
+  function prepararFormulario(ev = null) {
+    $("formEvento").reset();
+    $("mensajeEvento").textContent = "";
+    $("mensajeEvento").classList.remove("ok");
+    llenarSelect($("selCliente"), clientes, "id_cliente", (c) => `${c.nombre} (${c.telefono})`, "+ Nuevo cliente");
+    llenarSelect($("selUbicacion"), ubicaciones, "id_ubicacion", (u) => `${u.lugar} — ${u.direccion}`, "+ Nueva ubicación");
+    if (!ev) { $("selCliente").value = "nuevo"; $("selUbicacion").value = "nuevo"; }
+    $("evFecha").min = ev ? "" : hoyISO();
+
+    const asignados = {};
+    if (ev) {
+      $("selCliente").value = ev.id_cliente;
+      $("selUbicacion").value = ev.id_ubicacion;
+      $("evFecha").value = ev.fecha;
+      $("evInicio").value = hora(ev.hora_inicio);
+      $("evFin").value = hora(ev.hora_fin);
+      $("evTipo").value = ev.tipo_show;
+      $("evInvitados").value = ev.num_invitados;
+      $("evEstado").value = ev.estado;
+      ev.asignacion_material.forEach((a) => { asignados[a.id_material] = a.cantidad; });
+    }
+    $("tituloFormulario").textContent = ev ? "Editar evento" : "Nuevo evento";
+    $("botonGuardarEvento").textContent = ev ? "Guardar cambios" : "Guardar evento";
+    $("botonCancelarEdicion").classList.toggle("oculto", !ev);
+    actualizarCamposNuevos();
+
+    const lista = $("listaAsignar");
+    lista.innerHTML = "";
+    if (materiales.length === 0) lista.innerHTML = '<p class="nota">No hay materiales en el inventario.</p>';
+    materiales.forEach((m) => {
+      const fila = document.createElement("div");
+      fila.className = "asignar";
+      fila.innerHTML = `<span></span><input type="number" min="0" value="0" aria-label="">`;
+      fila.querySelector("span").innerHTML = "";
+      fila.querySelector("span").append(m.nombre, document.createElement("br"));
+      const sm = document.createElement("small");
+      sm.textContent = `Disponibles: ${m.cantidad_disponible}`;
+      fila.querySelector("span").append(sm);
+      const inp = fila.querySelector("input");
+      inp.max = m.cantidad_disponible;
+      inp.value = asignados[m.id_material] || 0;
+      inp.dataset.id = m.id_material;
+      inp.setAttribute("aria-label", "Cantidad de " + m.nombre);
+      lista.appendChild(fila);
+    });
+  }
+
+  function actualizarCamposNuevos() {
+    const nc = $("selCliente").value === "nuevo";
+    const nu = $("selUbicacion").value === "nuevo";
+    $("nuevoCliente").classList.toggle("oculto", !nc);
+    $("nuevaUbicacion").classList.toggle("oculto", !nu);
+    $("cliNombre").required = nc; $("cliTelefono").required = nc;
+    $("ubiLugar").required = nu; $("ubiDireccion").required = nu;
+  }
+  $("selCliente").addEventListener("change", actualizarCamposNuevos);
+  $("selUbicacion").addEventListener("change", actualizarCamposNuevos);
+
+  function editarEvento(ev) {
+    eventoEditando = ev;
+    mostrarVista("nuevo");
+    prepararFormulario(ev);
+  }
+  $("botonCancelarEdicion").addEventListener("click", () => { eventoEditando = null; mostrarVista("agenda"); });
+
+  $("formEvento").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const msg = $("mensajeEvento");
+    msg.textContent = ""; msg.classList.remove("ok");
+    if ($("evFin").value <= $("evInicio").value) { msg.textContent = "La hora de fin debe ser después de la hora de inicio."; return; }
+    $("botonGuardarEvento").disabled = true;
+    try {
+      // 1. Cliente
+      let idCliente = $("selCliente").value;
+      if (idCliente === "nuevo") {
+        const { data, error } = await db.from("cliente")
+          .insert({ nombre: $("cliNombre").value.trim(), telefono: $("cliTelefono").value.trim() })
+          .select().single();
+        if (error) throw error;
+        idCliente = data.id_cliente;
+      }
+      // 2. Ubicación
+      let idUbicacion = $("selUbicacion").value;
+      if (idUbicacion === "nuevo") {
+        const { data, error } = await db.from("ubicacion")
+          .insert({ lugar: $("ubiLugar").value.trim(), direccion: $("ubiDireccion").value.trim() })
+          .select().single();
+        if (error) throw error;
+        idUbicacion = data.id_ubicacion;
+      }
+      // 3. Evento (la base de datos rechaza horarios traslapados)
+      const datos = {
+        id_cliente: Number(idCliente),
+        id_ubicacion: Number(idUbicacion),
+        fecha: $("evFecha").value,
+        hora_inicio: $("evInicio").value,
+        hora_fin: $("evFin").value,
+        tipo_show: $("evTipo").value,
+        num_invitados: Number($("evInvitados").value),
+        estado: $("evEstado").value
+      };
+      let idEvento;
+      if (eventoEditando) {
+        const { error } = await db.from("evento").update(datos).eq("id_evento", eventoEditando.id_evento);
+        if (error) throw error;
+        idEvento = eventoEditando.id_evento;
+        const { error: e2 } = await db.from("asignacion_material").delete().eq("id_evento", idEvento);
+        if (e2) throw e2;
+      } else {
+        const { data, error } = await db.from("evento").insert(datos).select().single();
+        if (error) throw error;
+        idEvento = data.id_evento;
+      }
+      // 4. Materiales asignados (la base de datos valida que alcancen)
+      const asignaciones = [...document.querySelectorAll("#listaAsignar input")]
+        .map((i) => ({ id_evento: idEvento, id_material: Number(i.dataset.id), cantidad: Number(i.value) }))
+        .filter((a) => a.cantidad > 0);
+      if (asignaciones.length) {
+        const { error } = await db.from("asignacion_material").insert(asignaciones);
+        if (error) throw new Error(explicarError(error) + " El evento sí se guardó; corrige los materiales desde Editar.");
+      }
+      await cargarCatalogos();
+      eventoEditando = null;
+      mostrarVista("agenda");
+    } catch (err) {
+      msg.textContent = err.code ? explicarError(err) : err.message;
+    } finally {
+      $("botonGuardarEvento").disabled = false;
+    }
+  });
+
+  // ================= Inventario =================
+  async function cargarInventario() {
+    $("mensajeInventario").textContent = "";
+    const { data, error } = await db.from("material").select("*").order("id_material");
+    if (error) { $("mensajeInventario").textContent = explicarError(error); return; }
+    materiales = data;
+    const lista = $("listaMateriales");
+    lista.innerHTML = "";
+    if (data.length === 0) { lista.innerHTML = '<li class="ayuda">Todavía no hay materiales registrados.</li>'; return; }
+    data.forEach((m) => lista.appendChild(filaMaterial(m)));
+  }
+
+  function filaMaterial(m) {
     const li = document.createElement("li");
     li.className = "material";
     li.innerHTML = `
-      <div class="info">
-        <strong></strong>
-        <small></small>
-      </div>
+      <div class="info"><strong></strong><small></small></div>
       <div class="contador">
         <button type="button" aria-label="Quitar uno">−</button>
         <span class="numero"></span>
@@ -241,28 +639,33 @@
   }
 
   function pintar(m, li) {
-    const numero = li.querySelector(".numero");
-    numero.textContent = m.cantidad_disponible;
+    const n = li.querySelector(".numero");
+    n.textContent = m.cantidad_disponible;
     li.classList.toggle("consumible", m.tipo === "Consumible");
     li.classList.toggle("agotado", m.cantidad_disponible === 0);
-    numero.classList.remove("cambio"); void numero.offsetWidth; numero.classList.add("cambio");
+    n.classList.remove("cambio"); void n.offsetWidth; n.classList.add("cambio");
   }
 
-  // Guardar la nueva cantidad en la base de datos
   async function cambiarCantidad(m, delta, li) {
     const nueva = m.cantidad_disponible + delta;
     if (nueva < 0) return;
-    const { error } = await db
-      .from("material")
-      .update({ cantidad_disponible: nueva })
-      .eq("id_material", m.id_material);
-    if (error) {
-      $("mensajePanel").textContent = "No se pudo guardar el cambio: " + error.message;
-      return;
-    }
+    const { error } = await db.from("material").update({ cantidad_disponible: nueva }).eq("id_material", m.id_material);
+    if (error) { $("mensajeInventario").textContent = explicarError(error); return; }
     m.cantidad_disponible = nueva;
     pintar(m, li);
   }
+
+  $("formMaterial").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const { error } = await db.from("material").insert({
+      nombre: $("matNombre").value.trim(),
+      tipo: $("matTipo").value,
+      cantidad_disponible: Number($("matCantidad").value)
+    });
+    if (error) { $("mensajeInventario").textContent = explicarError(error); return; }
+    $("formMaterial").reset();
+    cargarInventario();
+  });
 
   revisarSesion();
 </script>
