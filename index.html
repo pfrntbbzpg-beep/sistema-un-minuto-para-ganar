@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Un Minuto para Ganar · Administración</title>
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
+<style>
+  :root {
+    --azul: #1b6fd1;
+    --azul-claro: #e4f0fd;
+    --rojo: #d81e2c;
+    --granate: #4a0b14;
+    --amarillo: #ffc83d;
+    --tinta: #1d1420;
+    --gris: #5d6880;
+    --fondo: #f6f8fc;
+    --blanco: #ffffff;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: "Nunito Sans", Arial, sans-serif;
+    background: var(--fondo);
+    color: var(--tinta);
+    min-height: 100vh;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  }
+  h1, h2, .numero { font-family: "Lilita One", "Arial Rounded MT Bold", Arial, sans-serif; font-weight: 400; letter-spacing: .5px; }
+  button, input { font: inherit; }
+  :focus-visible { outline: 3px solid var(--amarillo); outline-offset: 2px; }
+  .oculto { display: none !important; }
+
+  /* Inicio de sesión */
+  #login {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background:
+      radial-gradient(circle at 12% 18%, rgba(255,200,61,.35) 0 38px, transparent 40px),
+      radial-gradient(circle at 85% 12%, rgba(27,111,209,.45) 0 52px, transparent 54px),
+      radial-gradient(circle at 78% 82%, rgba(216,30,44,.55) 0 64px, transparent 66px),
+      radial-gradient(circle at 20% 88%, rgba(120,200,120,.30) 0 30px, transparent 32px),
+      radial-gradient(circle at 50% 50%, #7a1420, var(--granate) 70%);
+  }
+  .tarjeta-login {
+    width: 100%;
+    max-width: 380px;
+    background: var(--blanco);
+    border-radius: 24px;
+    padding: 32px 28px;
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .marca { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+  .logo { width: 150px; height: 150px; border-radius: 50%; margin-top: -96px; border: 6px solid var(--blanco); background: var(--granate); }
+  .logo-chico { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--blanco); }
+  .titulo { display: flex; align-items: center; gap: 12px; }
+  .marca h1 { font-size: 28px; line-height: 1.05; color: var(--rojo); }
+  .marca p { color: var(--gris); font-size: 14px; }
+  label { display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 15px; }
+  input {
+    border: 2px solid #d5dcea; border-radius: 12px;
+    padding: 12px 14px; font-size: 16px; color: var(--tinta);
+  }
+  input:focus { border-color: var(--azul); outline: none; }
+  .boton {
+    background: var(--rojo); color: var(--blanco);
+    border: none; border-radius: 12px; padding: 14px;
+    font-weight: 700; font-size: 17px; cursor: pointer;
+  }
+  .boton:disabled { opacity: .6; cursor: wait; }
+  .mensaje { font-size: 14px; color: var(--rojo); min-height: 18px; }
+
+  /* Panel */
+  header {
+    background: var(--azul); color: var(--blanco);
+    padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  header h1 { font-size: 22px; }
+  .salir {
+    background: transparent; color: var(--blanco);
+    border: 2px solid rgba(255,255,255,.5); border-radius: 10px;
+    padding: 6px 12px; font-weight: 700; cursor: pointer; white-space: nowrap;
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 24px 20px 48px; display: flex; flex-direction: column; gap: 16px; }
+  main h2 { font-size: 28px; }
+  .ayuda { color: var(--gris); }
+  .lista { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .material {
+    background: var(--blanco); border-radius: 16px;
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 14px;
+    border-left: 6px solid var(--azul);
+  }
+  .material.consumible { border-left-color: var(--amarillo); }
+  .material.agotado { border-left-color: var(--rojo); }
+  .info { flex: 1; min-width: 0; }
+  .info strong { display: block; font-size: 17px; }
+  .info small { color: var(--gris); font-size: 14px; }
+  .contador { display: flex; align-items: center; gap: 8px; }
+  .contador button {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 2px solid var(--azul-claro); background: var(--azul-claro);
+    color: var(--azul); font-weight: 800; font-size: 20px; cursor: pointer;
+  }
+  .numero { font-size: 26px; font-weight: 800; min-width: 36px; text-align: center; color: var(--azul); }
+  .material.agotado .numero { color: var(--rojo); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .numero.cambio { animation: pulso .35s ease; }
+    @keyframes pulso { 50% { transform: scale(1.25); } }
+  }
+</style>
+</head>
+<body>
+
+<!-- Pantalla de inicio de sesión -->
+<section id="login">
+  <form class="tarjeta-login" id="formLogin">
+    <div class="marca">
+      <img class="logo" src="logo.png" alt="Logo de Un Minuto para Ganar">
+      <h1>Panel de administración</h1>
+      <p>Agenda, clientes e inventario de los shows</p>
+    </div>
+    <label>Correo
+      <input type="email" id="correo" autocomplete="username" required>
+    </label>
+    <label>Contraseña
+      <input type="password" id="contrasena" autocomplete="current-password" required>
+    </label>
+    <button class="boton" id="botonEntrar" type="submit">Entrar</button>
+    <p class="mensaje" id="mensajeLogin" role="alert"></p>
+  </form>
+</section>
+
+<!-- Panel del administrador -->
+<section id="panel" class="oculto">
+  <header>
+    <div class="titulo">
+      <img class="logo-chico" src="logo.png" alt="">
+      <h1>Un Minuto para Ganar</h1>
+    </div>
+    <button class="salir" id="botonSalir">Cerrar sesión</button>
+  </header>
+  <main>
+    <h2>Inventario</h2>
+    <p class="ayuda">Usa − y + para actualizar la cantidad disponible de cada material.</p>
+    <p class="mensaje" id="mensajePanel" role="alert"></p>
+    <ul class="lista" id="listaMateriales"></ul>
+  </main>
+</section>
+
+<script>
+  // Conexión con Supabase (la clave publicable es segura: la protección está en las reglas RLS)
+  const SUPABASE_URL = "https://hkagkluibrjbvjbmoicb.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_4ugzBCxeBX-gySzz5Rqj1Q_LY-Wgsuv";
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const $ = (id) => document.getElementById(id);
+
+  // Mostrar la pantalla correcta según haya sesión o no
+  async function revisarSesion() {
+    const { data } = await db.auth.getSession();
+    const conSesion = !!data.session;
+    $("login").classList.toggle("oculto", conSesion);
+    $("panel").classList.toggle("oculto", !conSesion);
+    if (conSesion) cargarMateriales();
+  }
+
+  // Iniciar sesión
+  $("formLogin").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    $("botonEntrar").disabled = true;
+    $("mensajeLogin").textContent = "";
+    const { error } = await db.auth.signInWithPassword({
+      email: $("correo").value.trim(),
+      password: $("contrasena").value
+    });
+    $("botonEntrar").disabled = false;
+    if (error) {
+      $("mensajeLogin").textContent = "Correo o contraseña incorrectos. Revisa los datos e inténtalo otra vez.";
+      return;
+    }
+    revisarSesion();
+  });
+
+  // Cerrar sesión
+  $("botonSalir").addEventListener("click", async () => {
+    await db.auth.signOut();
+    revisarSesion();
+  });
+
+  // Cargar inventario
+  async function cargarMateriales() {
+    $("mensajePanel").textContent = "";
+    const { data, error } = await db
+      .from("material")
+      .select("id_material, nombre, tipo, cantidad_disponible")
+      .order("id_material");
+
+    if (error) {
+      $("mensajePanel").textContent = "No se pudo cargar el inventario: " + error.message;
+      return;
+    }
+    const lista = $("listaMateriales");
+    lista.innerHTML = "";
+    if (data.length === 0) {
+      lista.innerHTML = '<li class="ayuda">Todavía no hay materiales registrados.</li>';
+      return;
+    }
+    data.forEach((m) => lista.appendChild(crearFila(m)));
+  }
+
+  function crearFila(m) {
+    const li = document.createElement("li");
+    li.className = "material";
+    li.innerHTML = `
+      <div class="info">
+        <strong></strong>
+        <small></small>
+      </div>
+      <div class="contador">
+        <button type="button" aria-label="Quitar uno">−</button>
+        <span class="numero"></span>
+        <button type="button" aria-label="Agregar uno">+</button>
+      </div>`;
+    li.querySelector("strong").textContent = m.nombre;
+    li.querySelector("small").textContent = m.tipo;
+    const [menos, mas] = li.querySelectorAll("button");
+    menos.addEventListener("click", () => cambiarCantidad(m, -1, li));
+    mas.addEventListener("click", () => cambiarCantidad(m, 1, li));
+    pintar(m, li);
+    return li;
+  }
+
+  function pintar(m, li) {
+    const numero = li.querySelector(".numero");
+    numero.textContent = m.cantidad_disponible;
+    li.classList.toggle("consumible", m.tipo === "Consumible");
+    li.classList.toggle("agotado", m.cantidad_disponible === 0);
+    numero.classList.remove("cambio"); void numero.offsetWidth; numero.classList.add("cambio");
+  }
+
+  // Guardar la nueva cantidad en la base de datos
+  async function cambiarCantidad(m, delta, li) {
+    const nueva = m.cantidad_disponible + delta;
+    if (nueva < 0) return;
+    const { error } = await db
+      .from("material")
+      .update({ cantidad_disponible: nueva })
+      .eq("id_material", m.id_material);
+    if (error) {
+      $("mensajePanel").textContent = "No se pudo guardar el cambio: " + error.message;
+      return;
+    }
+    m.cantidad_disponible = nueva;
+    pintar(m, li);
+  }
+
+  revisarSesion();
+</script>
+</body>
+</html>
