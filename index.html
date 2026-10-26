@@ -146,11 +146,23 @@
   }
   .numero { font-size: 26px; min-width: 36px; text-align: center; color: var(--azul); }
   .material.agotado .numero { color: var(--rojo); }
-  .asignar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid #eef1f6; }
-  .asignar:last-child { border-bottom: none; }
-  .asignar span { font-weight: 600; }
+  .asignar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 12px; border: 2px solid transparent; }
+  .asignar + .asignar { margin-top: 6px; }
+  .asignar.elegido { background: var(--verde-claro); border-color: #bfe8cf; }
+  .asignar span { font-weight: 700; }
   .asignar small { color: var(--gris); font-weight: 400; }
-  .asignar input { width: 90px; text-align: center; }
+  .asignar .contador input { width: 56px; text-align: center; padding: 8px 4px; font-size: 18px; font-weight: 700; }
+  .juegos { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+  .juego-op { display: flex; align-items: center; gap: 10px; border: 2px solid var(--borde); border-radius: 12px; padding: 10px 12px; cursor: pointer; font-weight: 700; font-size: 15px; flex-direction: row; }
+  .juego-op input { width: 22px; height: 22px; flex: none; accent-color: var(--rojo); }
+  .juego-op.elegido { border-color: var(--rojo); background: var(--rojo-claro); }
+  .juego-op small { display: block; color: var(--gris); font-weight: 400; font-size: 13px; }
+  .juego-tarjeta { background: var(--blanco); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; border-left: 6px solid var(--rojo); }
+  .juego-tarjeta strong { font-size: 17px; }
+  .juego-tarjeta .receta { color: var(--gris); font-size: 14px; }
+  .editor-receta { display: flex; flex-direction: column; gap: 6px; border-top: 1px solid #eef1f6; padding-top: 10px; }
+  .carga { background: var(--amarillo-claro); border-radius: 12px; padding: 12px 14px; font-size: 15px; line-height: 1.45; }
+  .carga b { display: block; margin-bottom: 2px; }
 
   /* ---------- Usuario, indicadores, búsqueda, clientes ---------- */
   .usuario { display: block; font-size: 13px; opacity: .85; font-family: "Nunito Sans", Arial, sans-serif; letter-spacing: 0; }
@@ -280,9 +292,16 @@
       </div>
 
       <div class="grupo">
-        <h3>Materiales para el show</h3>
-        <p class="nota">Escribe cuántos de cada material se llevarán. Deja 0 si no se usa.</p>
+        <h3>¿Qué juegos se harán en este show?</h3>
+        <p class="nota">Marca los juegos del show. Los materiales que necesita cada juego se calculan solos abajo.</p>
+        <div class="juegos" id="listaJuegosEvento"></div>
+      </div>
+
+      <div class="grupo">
+        <h3>Materiales que se cargan</h3>
+        <p class="nota">Se llenan según los juegos elegidos. Si hace falta, ajústalos con <b>−</b> y <b>+</b>. El sistema no deja apartar más de los que hay en bodega.</p>
         <div id="listaAsignar"></div>
+        <div class="carga" id="resumenCarga"></div>
       </div>
 
       <p class="mensaje" id="mensajeEvento" role="alert"></p>
@@ -324,6 +343,17 @@
       </div>
       <button class="boton" type="submit">Agregar material</button>
     </form>
+
+    <h2 style="margin-top:12px">Juegos</h2>
+    <p class="ayuda">Define qué materiales necesita cada juego. Así, al registrar un evento, el sistema calcula solo lo que hay que cargar.</p>
+    <p class="mensaje" id="mensajeJuegos" role="alert"></p>
+    <div class="lista" id="listaJuegos"></div>
+    <form class="grupo" id="formJuego">
+      <h3>Agregar juego</h3>
+      <label>Nombre <input id="jueNombre" maxlength="100" required></label>
+      <label>Descripción (opcional) <input id="jueDescripcion" maxlength="200"></label>
+      <button class="boton" type="submit">Agregar juego</button>
+    </form>
   </main>
 </section>
 
@@ -342,6 +372,7 @@
   let filtroAgenda = "proximos";
   let eventosAgenda = [];
   let listaClientesCache = [];
+  let juegos = [];
 
   // Traduce los errores de la base de datos a mensajes claros
   function explicarError(error) {
@@ -405,14 +436,16 @@
 
   // ================= Catálogos (clientes, ubicaciones, materiales) =================
   async function cargarCatalogos() {
-    const [c, u, m] = await Promise.all([
+    const [c, u, m, j] = await Promise.all([
       db.from("cliente").select("*").order("nombre"),
       db.from("ubicacion").select("*").order("lugar"),
-      db.from("material").select("*").order("id_material")
+      db.from("material").select("*").order("id_material"),
+      db.from("juego").select("*, juego_material(id_material, cantidad)").order("id_juego")
     ]);
     clientes = c.data || [];
     ubicaciones = u.data || [];
     materiales = m.data || [];
+    juegos = j.data || [];
   }
 
   // ================= Agenda =================
@@ -425,7 +458,7 @@
   async function cargarAgenda() {
     $("mensajeAgenda").textContent = "";
     let consulta = db.from("evento")
-      .select("*, cliente(nombre, telefono), ubicacion(lugar, direccion), asignacion_material(id_material, cantidad, material(nombre))")
+      .select("*, cliente(nombre, telefono), ubicacion(lugar, direccion), asignacion_material(id_material, cantidad, material(nombre)), evento_juego(id_juego, juego(nombre))")
       .order("fecha").order("hora_inicio");
     if (filtroAgenda === "proximos") consulta = consulta.gte("fecha", hoyISO());
     const { data, error } = await consulta;
@@ -487,6 +520,7 @@
       <p><b class="c"></b> <span class="t"></span></p>
       <p class="u"></p>
       <p class="s"></p>
+      <p class="jg"></p>
       <p class="materiales"></p>
       <div class="acciones"></div>`;
     div.querySelector(".hora").textContent = `${hora(ev.hora_inicio)} – ${hora(ev.hora_fin)}`;
@@ -495,6 +529,8 @@
     div.querySelector(".t").textContent = "· " + ev.cliente.telefono;
     div.querySelector(".u").textContent = `${ev.ubicacion.lugar} — ${ev.ubicacion.direccion}`;
     div.querySelector(".s").textContent = `Show ${ev.tipo_show.toLowerCase()} · ${ev.num_invitados} invitados`;
+    const jgs = (ev.evento_juego || []).map((x) => x.juego.nombre).join(", ");
+    div.querySelector(".jg").textContent = jgs ? "Juegos: " + jgs : "Sin juegos elegidos";
     div.querySelector(".materiales").textContent = mats ? "Materiales: " + mats : "Sin materiales asignados";
 
     const acc = div.querySelector(".acciones");
@@ -533,6 +569,8 @@
 👤 Cliente: ${ev.cliente.nombre} (${ev.cliente.telefono})
 🎤 Show ${ev.tipo_show.toLowerCase()} · ${ev.num_invitados} invitados
 
+🎲 *Juegos:* ${(ev.evento_juego || []).map((x) => x.juego.nombre).join(", ") || "Sin juegos elegidos"}
+
 🧰 *Materiales a cargar:*
 ${mats}`;
     window.open("https://wa.me/?text=" + encodeURIComponent(texto), "_blank");
@@ -559,6 +597,7 @@ ${mats}`;
     $("evFecha").min = ev ? "" : hoyISO();
 
     const asignados = {};
+    const juegosEvento = new Set((ev && ev.evento_juego ? ev.evento_juego : []).map((x) => x.id_juego));
     if (ev) {
       $("selCliente").value = ev.id_cliente;
       $("selUbicacion").value = ev.id_ubicacion;
@@ -575,25 +614,103 @@ ${mats}`;
     $("botonCancelarEdicion").classList.toggle("oculto", !ev);
     actualizarCamposNuevos();
 
+    // Lista de juegos para marcar
+    const lj = $("listaJuegosEvento");
+    lj.innerHTML = "";
+    if (juegos.length === 0) lj.innerHTML = '<p class="nota">No hay juegos registrados. Agrégalos en la pestaña Inventario.</p>';
+    juegos.forEach((j) => {
+      const op = document.createElement("label");
+      op.className = "juego-op";
+      op.innerHTML = `<input type="checkbox"><span></span>`;
+      const chk = op.querySelector("input");
+      chk.value = j.id_juego;
+      chk.checked = juegosEvento.has(j.id_juego);
+      op.classList.toggle("elegido", chk.checked);
+      const sp = op.querySelector("span");
+      sp.append(j.nombre);
+      const sm = document.createElement("small");
+      sm.textContent = j.juego_material.length ? recetaTexto(j) : "Sin materiales definidos";
+      sp.append(sm);
+      chk.addEventListener("change", () => { op.classList.toggle("elegido", chk.checked); calcularMaterialesDeJuegos(); });
+      lj.appendChild(op);
+    });
+
     const lista = $("listaAsignar");
     lista.innerHTML = "";
     if (materiales.length === 0) lista.innerHTML = '<p class="nota">No hay materiales en el inventario.</p>';
     materiales.forEach((m) => {
+      const tope = m.cantidad_disponible;
       const fila = document.createElement("div");
       fila.className = "asignar";
-      fila.innerHTML = `<span></span><input type="number" min="0" value="0" aria-label="">`;
-      fila.querySelector("span").innerHTML = "";
-      fila.querySelector("span").append(m.nombre, document.createElement("br"));
+      fila.innerHTML = `
+        <span></span>
+        <div class="contador">
+          <button type="button" aria-label="Quitar uno">−</button>
+          <input type="number" min="0" inputmode="numeric">
+          <button type="button" aria-label="Agregar uno">+</button>
+        </div>`;
+      const sp = fila.querySelector("span");
+      sp.append(m.nombre, document.createElement("br"));
       const sm = document.createElement("small");
-      sm.textContent = `Disponibles: ${m.cantidad_disponible}`;
-      fila.querySelector("span").append(sm);
+      sm.textContent = `Hay ${tope} en bodega`;
+      sp.append(sm);
       const inp = fila.querySelector("input");
-      inp.max = m.cantidad_disponible;
+      inp.max = tope;
       inp.value = asignados[m.id_material] || 0;
       inp.dataset.id = m.id_material;
-      inp.setAttribute("aria-label", "Cantidad de " + m.nombre);
+      inp.dataset.nombre = m.nombre;
+      inp.setAttribute("aria-label", "Cantidad de " + m.nombre + " para el show");
+      const fijar = (v) => {
+        inp.value = Math.max(0, Math.min(tope, Number(v) || 0));
+        fila.classList.toggle("elegido", Number(inp.value) > 0);
+        actualizarResumenCarga();
+      };
+      const [menos, mas] = fila.querySelectorAll("button");
+      menos.addEventListener("click", () => fijar(Number(inp.value) - 1));
+      mas.addEventListener("click", () => fijar(Number(inp.value) + 1));
+      inp.addEventListener("change", () => fijar(inp.value));
+      fila.classList.toggle("elegido", Number(inp.value) > 0);
       lista.appendChild(fila);
     });
+    actualizarResumenCarga();
+  }
+
+  // Texto con lo que necesita un juego, p. ej. "Necesita 5 × Vasos"
+  function recetaTexto(j) {
+    return "Necesita " + j.juego_material.map((r) => {
+      const m = materiales.find((x) => x.id_material === r.id_material);
+      return `${r.cantidad} × ${m ? m.nombre : "material"}`;
+    }).join(", ");
+  }
+
+  // Suma los materiales de los juegos marcados y los pone en los contadores
+  function calcularMaterialesDeJuegos() {
+    const marcados = [...document.querySelectorAll("#listaJuegosEvento input:checked")].map((c) => Number(c.value));
+    const totales = {};
+    juegos.filter((j) => marcados.includes(j.id_juego)).forEach((j) =>
+      j.juego_material.forEach((r) => { totales[r.id_material] = (totales[r.id_material] || 0) + r.cantidad; }));
+    let faltan = [];
+    document.querySelectorAll("#listaAsignar input").forEach((inp) => {
+      const necesita = totales[inp.dataset.id] || 0;
+      const tope = Number(inp.max);
+      if (necesita > tope) faltan.push(`${inp.dataset.nombre} (se necesitan ${necesita}, hay ${tope})`);
+      inp.value = Math.min(necesita, tope);
+      inp.closest(".asignar").classList.toggle("elegido", Number(inp.value) > 0);
+    });
+    actualizarResumenCarga();
+    const msg = $("mensajeEvento");
+    msg.classList.remove("ok");
+    msg.textContent = faltan.length ? "Ojo: no alcanza el material para todos los juegos: " + faltan.join("; ") + "." : "";
+  }
+
+  // Resumen en palabras de lo que se va a cargar para el show
+  function actualizarResumenCarga() {
+    const elegidos = [...document.querySelectorAll("#listaAsignar input")].filter((i) => Number(i.value) > 0);
+    const caja = $("resumenCarga");
+    caja.innerHTML = "<b>Lista de carga para este show</b>";
+    caja.append(elegidos.length
+      ? elegidos.map((i) => `${i.value} × ${i.dataset.nombre}`).join(" · ")
+      : "Todavía no has apartado ningún material.");
   }
 
   function actualizarCamposNuevos() {
@@ -669,6 +786,17 @@ ${mats}`;
       if (asignaciones.length) {
         const { error } = await db.from("asignacion_material").insert(asignaciones);
         if (error) throw new Error(explicarError(error) + " El evento sí se guardó; corrige los materiales desde Editar.");
+      }
+      // 5. Juegos del evento
+      if (eventoEditando) {
+        const { error } = await db.from("evento_juego").delete().eq("id_evento", idEvento);
+        if (error) throw error;
+      }
+      const juegosElegidos = [...document.querySelectorAll("#listaJuegosEvento input:checked")]
+        .map((c) => ({ id_evento: idEvento, id_juego: Number(c.value) }));
+      if (juegosElegidos.length) {
+        const { error } = await db.from("evento_juego").insert(juegosElegidos);
+        if (error) throw error;
       }
       await cargarCatalogos();
       eventoEditando = null;
@@ -755,9 +883,103 @@ ${mats}`;
     materiales = data;
     const lista = $("listaMateriales");
     lista.innerHTML = "";
-    if (data.length === 0) { lista.innerHTML = '<li class="ayuda">Todavía no hay materiales registrados.</li>'; return; }
+    if (data.length === 0) lista.innerHTML = '<li class="ayuda">Todavía no hay materiales registrados.</li>';
     data.forEach((m) => lista.appendChild(filaMaterial(m)));
+    cargarJuegos();
   }
+
+  // ================= Juegos =================
+  async function cargarJuegos() {
+    $("mensajeJuegos").textContent = "";
+    const { data, error } = await db.from("juego").select("*, juego_material(id_material, cantidad)").order("id_juego");
+    if (error) { $("mensajeJuegos").textContent = explicarError(error); return; }
+    juegos = data;
+    const cont = $("listaJuegos");
+    cont.innerHTML = "";
+    if (data.length === 0) { cont.innerHTML = '<p class="ayuda">Todavía no hay juegos registrados.</p>'; return; }
+    data.forEach((j) => cont.appendChild(tarjetaJuego(j)));
+  }
+
+  function tarjetaJuego(j) {
+    const div = document.createElement("div");
+    div.className = "juego-tarjeta";
+    div.innerHTML = `<strong></strong><small class="receta"></small><div class="acciones"></div>`;
+    div.querySelector("strong").textContent = j.nombre + (j.descripcion ? " · " + j.descripcion : "");
+    div.querySelector(".receta").textContent = j.juego_material.length ? recetaTexto(j) : "Todavía no tiene materiales definidos.";
+    const b = document.createElement("button");
+    b.className = "boton-sec"; b.type = "button"; b.textContent = "Definir materiales";
+    b.addEventListener("click", () => abrirEditorReceta(j, div, b));
+    div.querySelector(".acciones").appendChild(b);
+    return div;
+  }
+
+  // Editor para indicar cuántos de cada material usa un juego
+  function abrirEditorReceta(j, div, boton) {
+    if (div.querySelector(".editor-receta")) return;
+    boton.classList.add("oculto");
+    const ed = document.createElement("div");
+    ed.className = "editor-receta";
+    const actuales = {};
+    j.juego_material.forEach((r) => { actuales[r.id_material] = r.cantidad; });
+    materiales.forEach((m) => {
+      const fila = document.createElement("div");
+      fila.className = "asignar";
+      fila.innerHTML = `<span></span>
+        <div class="contador">
+          <button type="button" aria-label="Quitar uno">−</button>
+          <input type="number" min="0" inputmode="numeric">
+          <button type="button" aria-label="Agregar uno">+</button>
+        </div>`;
+      fila.querySelector("span").textContent = m.nombre;
+      const inp = fila.querySelector("input");
+      inp.value = actuales[m.id_material] || 0;
+      inp.dataset.id = m.id_material;
+      inp.setAttribute("aria-label", "Cantidad de " + m.nombre + " para " + j.nombre);
+      const fijar = (v) => { inp.value = Math.max(0, Number(v) || 0); fila.classList.toggle("elegido", Number(inp.value) > 0); };
+      const [menos, mas] = fila.querySelectorAll("button");
+      menos.addEventListener("click", () => fijar(Number(inp.value) - 1));
+      mas.addEventListener("click", () => fijar(Number(inp.value) + 1));
+      inp.addEventListener("change", () => fijar(inp.value));
+      fila.classList.toggle("elegido", Number(inp.value) > 0);
+      ed.appendChild(fila);
+    });
+    const acc = document.createElement("div");
+    acc.className = "acciones";
+    const guardar = document.createElement("button");
+    guardar.className = "boton-sec exito"; guardar.type = "button"; guardar.textContent = "Guardar materiales del juego";
+    const cancelar = document.createElement("button");
+    cancelar.className = "boton-sec"; cancelar.type = "button"; cancelar.textContent = "Cancelar";
+    cancelar.addEventListener("click", () => { ed.remove(); boton.classList.remove("oculto"); });
+    guardar.addEventListener("click", async () => {
+      const receta = [...ed.querySelectorAll("input")]
+        .map((i) => ({ id_juego: j.id_juego, id_material: Number(i.dataset.id), cantidad: Number(i.value) }))
+        .filter((r) => r.cantidad > 0);
+      const { error } = await db.from("juego_material").delete().eq("id_juego", j.id_juego);
+      if (error) { $("mensajeJuegos").textContent = explicarError(error); return; }
+      if (receta.length) {
+        const { error: e2 } = await db.from("juego_material").insert(receta);
+        if (e2) { $("mensajeJuegos").textContent = explicarError(e2); return; }
+      }
+      await cargarCatalogos();
+      cargarJuegos();
+    });
+    acc.append(guardar, cancelar);
+    ed.appendChild(acc);
+    div.appendChild(ed);
+  }
+
+  $("formJuego").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const desc = $("jueDescripcion").value.trim();
+    const { error } = await db.from("juego").insert({ nombre: $("jueNombre").value.trim(), descripcion: desc || null });
+    if (error) {
+      $("mensajeJuegos").textContent = error.code === "23505" ? "Ya existe un juego con ese nombre." : explicarError(error);
+      return;
+    }
+    $("formJuego").reset();
+    await cargarCatalogos();
+    cargarJuegos();
+  });
 
   function filaMaterial(m) {
     const li = document.createElement("li");
